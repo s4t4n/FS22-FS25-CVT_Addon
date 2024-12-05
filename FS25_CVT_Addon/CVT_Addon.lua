@@ -1,32 +1,36 @@
 -- @titel       LessMotorBrakeforce Script for FarmingSimulator 2022
--- @new titel   CVT_Addon Script for FarmingSimulator 2022
--- @author      s4t4n
--- @credits		Frvetz - ebenso ein riesen Dank an dieser Stelle!
+-- @new titel   CVT_Addon Script for FarmingSimulator 2022 now 25
+-- @author      SbSh_Modasti4n(s4t4n)
+-- @credits		Frvetz, Glowin, UpsideDown - ebenso ein riesen Dank an dieser Stelle!
 -- @version     v1.0.0.0 Release Modhub
--- @version		v1.0.0.1 Small Changes(FS25 1.2.0.2)
+-- @version		v1.0.0.1 Small Changes(FS22 1.2.0.2)
 -- @date        23/07/2022
 -- @info        CVTaddon Script for FarmingSimulator 2022
--- changed		app to pre 23.12.2022 SbSh(s4t4n)
--- changelog	Anpassung an FS25_realismAddon_gearbox von modelleicher
---				+ Vario Fahrstufen und Beschleunigungsrampen
--- last change	-- tickrate sync delay
 -- 19.11.2024	starting build for fs25
---
+-- last changes	-- renew hud, new store cfg, 
+
+--ToDo 
 --
 
 
 
 CVTaddon = {};
 CVTaddon.modDirectory = g_currentModDirectory;
+-- CVTaddon.modDirectory = MOD_NAME;
+
+if CVTaddon.MOD_NAME == nil then CVTaddon.MOD_NAME = g_currentModName end
+CVTaddon.MODSETTINGSDIR = g_currentModSettingsDirectory
+
+
 local modDesc = loadXMLFile("modDesc", g_currentModDirectory .. "modDesc.xml");
-CVTaddon.modversion = getXMLString(modDesc, "modDesc.version");
-CVTaddon.author = getXMLString(modDesc, "modDesc.author");
-CVTaddon.contributor = getXMLString(modDesc, "modDesc.contributor");
+-- CVTaddon.modversion = getXMLString(modDesc, "modDesc.version");
+-- CVTaddon.author = getXMLString(modDesc, "modDesc.author");
+-- CVTaddon.contributor = getXMLString(modDesc, "modDesc.contributor");
 source(CVTaddon.modDirectory.."events/SyncClientServerEvent.lua")
 
-local scrversion = "0.6.6.6";
+local scrversion = "0.6.6.9";
 local modversion = CVTaddon.modversion; -- moddesc
-local lastupdate = "09.11.24";
+local lastupdate = "09.12.24";
 
 -- _______________________
 cvtaDebugCVTon = false	 -- \
@@ -54,10 +58,10 @@ function CVTaddon.prerequisitesPresent(specializations)
     return true
 end
 
-function CVTaddon.registerEvents(vehicleType)
-	print("################################# registerEvents")
+-- function CVTaddon.registerEvents(vehicleType)
+	-- print("################################# registerEvents")
     -- SpecializationUtil.registerEvent(vehicleType, "onVehiclePhysicsUpdate")
-end
+-- enq
 
 function CVTaddon.registerEventListeners(vehicleType)
 	print("################################# registerEventListeners")
@@ -244,6 +248,7 @@ function CVTaddon:onLoad()
 	self.spec_CVTaddon = {}
 	local spec = self.spec_CVTaddon
 	local pcspec = self.spec_powerConsumer
+	CVTaddon.isDedi = g_server ~= nil and g_currentMission.connectedToDedicatedServer
 	
 	if self.spec_RealisticDamageSystemEngineDied == nil then
 		self.spec_RealisticDamageSystemEngineDied = {}
@@ -314,7 +319,8 @@ function CVTaddon:onLoad()
 	spec.NumberBlinkTimer = 0
 	spec.Counter = 0
 	spec.AN = false
-	spec.CVTconfig = 1
+	spec.CVTconfig = 4
+	spec.CVTcfgActive = 0
 	spec.CVTcfgExists = false
 	spec.CVTdamage = 0.000
 	
@@ -339,7 +345,7 @@ function CVTaddon:onLoad()
 	spec.forDBL_vmaxbackward = 0.0
 	
 	-- #GLOWIN-TEMP-SYNC
-	spec.SyncMotorTemperature = 60 -- temp
+	spec.SyncMotorTemperature = 0 -- temp
 	spec.SyncFanEnabled = false
 	spec.fanEnabledLast = false
 		
@@ -433,7 +439,7 @@ function CVTaddon:onLoad()
 	if spec.calcBrakeForce == nil then
 		spec.calcBrakeForce = "0.5"
 	end
-	spec.dirtyFlag = self:getNextDirtyFlag() -- needed?
+	spec.dirtyFlag = self:getNextDirtyFlag()
 	spec.check = false
 end  -- onLoad
 
@@ -441,52 +447,225 @@ end  -- onLoad
 function CVTaddon.initSpecialization()
 	print("################################# initSpecialization")
 	local schemaSavegame = Vehicle.xmlSchemaSavegame
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV1")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV2")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveVt")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3toggle")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3set1")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3set2")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3set3")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3set4")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3d")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV4")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV5")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV6")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV7")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV8")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV9")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV10")
-    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#vOne")
-    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#vTwo")
-    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#vThree")
-    schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#CVTCanStart")
-    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#vFive")
-    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#rpmDmax")
-    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#autoDiffs")
-	schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#CvtConfigId")
-	schemaSavegame:register(XMLValueType.FLOAT, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#CVTdamage")
-	print("CVT_Addon: initialized...... ")
-	print("CVT_Addon: by " .. CVTaddon.author .. " and awsome contributors " .. CVTaddon.contributor)
-	print("CVT_Addon: Script-Version...: " .. scrversion)
-	print("CVT_Addon: Mod-Version......: " .. modversion)
-	print("CVT-Addon: Date.............: " .. lastupdate)
+	local key = CVTaddon.MOD_NAME..".CVTaddon"
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV1")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV2")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveVt")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3toggle")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3set1")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3set2")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3set3")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3set4")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV3d")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV4")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV5")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV6")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV7")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV8")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV9")
+    -- schemaSavegame:register(XMLValueType.BOOL, "vehicles.vehicle(?).FS25_CVT_Addon.CVTaddon#eventActiveV10")
+    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#vOne", "Driving level", 1) -- DL
+    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#vTwo", "AccRamp", 1) -- AR
+    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#vThree", "BrakeRamp", 1) -- BR
+    -- schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#CVTCanStart", "Driving level", 1) -- ms
+    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#vFive", "Handthrottle", 1) -- HG
+    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#rpmDmax", "max rpm actually", 1)
+    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#autoDiffs", "AutoDiff state", 1)
+    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#CvtConfigId", "Config ID", 1)
+    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#CvtConfigActive", "OnOrOff", 1)
+    schemaSavegame:register(XMLValueType.INT, "vehicles.vehicle(?)."..key.."#CVTdamage", "CVT transmission wear", 1)
+
+	
+	-- new config add fs25
+	if g_vehicleConfigurationManager.configurations["CVTaddon"] == nil then
+		-- local vehicleConfigurationItemClass = VehicleConfigurationItem.new(VehicleConfigurationItemVehicleType.class)	
+		g_vehicleConfigurationManager:addConfigurationType("CVTaddon", g_i18n:getText("text_CVT_cfg"), key, vehicleConfigurationItemClass)
+	end
+	ConfigurationUtil.getConfigurationsFromXML = Utils.overwrittenFunction(ConfigurationUtil.getConfigurationsFromXML, addCVTconfig)
+	-- ConfigurationUtil.getConfigurationsFromXML = Utils.overwrittenFunction(ConfigurationUtil.getConfigurationsFromXML, CVTaddon.getConfigurationsFromXML)
+	-- dbgprint("initSpecialization : Configuration initialized", 1)
+	
+	print("CVT_Addon: initialized config...... ")
+	-- print("CVT_Addon: by " .. CVTaddon.author .. " and awsome contributors " .. CVTaddon.contributor)
+	-- print("CVT_Addon: Script-Version...: " .. scrversion)
+	-- print("CVT_Addon: Mod-Version......: " .. modversion)
+	-- print("CVT-Addon: Date.............: " .. lastupdate)
 end -- initSpecialization
+
+
+function addCVTconfig(self, superfunc, xmlFile, baseXMLName, baseDir, customEnvironment, isMod, storeItem)
+    -- print("addCVTconfig : parameters: xmlFile = "..tostring(xmlFile).." / baseXMLName = "..tostring(baseXMLName).." / baseDir = "..tostring(baseDir).." / customEnvironment = "..tostring(customEnvironment).." / isMod = "..tostring(isMod).." / storeItem = "..tostring(storeItem), 2)
+    
+    local configurations, defaultConfigurationIds = superfunc(self, xmlFile, baseXMLName, baseDir, customEnvironment, isMod, storeItem)
+	-- print("addCVTconfig : Kat: "..storeItem.categoryName.." / ".."Name: "..storeItem.xmlFilename, 2)
+
+	local category = storeItem.categoryName -- Missing a category? Just tell me, and I will add it :-)
+	if 
+		(	category == "TRACTORSS" 
+		or	category == "TRACTORSM"
+		or	category == "TRACTORSL"
+		or	category == "HARVESTERS"
+		or	category == "FORAGEHARVESTERS"
+		or	category == "BEETVEHICLES"
+		or	category == "POTATOVEHICLES"
+		or	category == "COTTONVEHICLES"
+		or	category == "SPRAYERVEHICLES"
+		or  category == "SLURRYVEHICLES"
+		or	category == "SUGARCANEVEHICLES"
+		or	category == "MOWERVEHICLES"
+		or	category == "MISCVEHICLES"
+		or	category == "GRAPEVEHICLES"
+		or 	category == "OLIVEVEHICLES"
+		
+		-- Ifkos etc.
+		or 	category == "LSFM"
+		
+		-- Hof Bergmann etc.
+		or category == "MINIAGRICULTUREEQUIPMENT"
+		or category == "FM_VEHICLES"
+		
+		or category == "FENDTPACKCATEGORY"
+		or category == "FD_CASEPACKCATEGORY"
+		or category == "SDFCORE2"
+		or category == "SDFCORE3"
+		or category == "SDFCORE4"
+		or category == "SDFCORE4H"
+		or category == "SDFCORE4L"
+		or category == "SDFCORE4S"
+		or category == "SDFCORE5"
+		or category == "SDFCORE5A"
+		or category == "SDFCORE5AH"
+		or category == "SDFCORE5AL"
+		or category == "SDFCORE5AS"
+		or category == "SDFCORE5N"
+		or category == "SDFCORE5NH"
+		or category == "SDFCORE5NL"
+		or category == "SDFCORE5NS"
+		)
+		
+		and	configurations ~= nil
+		
+		and xmlFile:hasProperty("vehicle.enterable")
+		and xmlFile:hasProperty("vehicle.motorized")
+		and xmlFile:hasProperty("vehicle.drivable")
+
+	then
+		local function loadFromSavegameXMLFileCVT(self, xmlFile, key, configurationData)
+			print_r(self, 0)
+		end
+		local function saveToXMLFileCVT(self, xmlFile, key, isActive)
+			print_r(self, 0)
+			xmlFile:setValue(key .. "#name", "CVTaddon")
+			xmlFile:setValue(key .. "#id", self.index)
+			xmlFile:setValue(key .. "#isActive", Utils.getNoNil(isActive, false))
+		end
+
+		configurations["CVTaddon"] = {
+        	{
+        		index = 1,
+        		name = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_HLM_notInstalled_short"), 
+        		isDefault = true,  
+        		isSelectable = true, 
+        		price = 0, 
+        		dailyUpkeep = 0, 
+        		loadFromSavegameXMLFile = loadFromSavegameXMLFileCVT, 
+        		saveToXMLFile = saveToXMLFileCVT, 
+        		desc = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_HLM_notInstalled")
+        	},
+        	{
+        		index = 2,
+        		name = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_HLM_installed_short"), 
+        		isDefault = false, 
+        		isSelectable = true, 
+        		price = 3000, 
+        		dailyUpkeep = 0, 
+        		loadFromSavegameXMLFile = loadFromSavegameXMLFileCVT, 
+        		saveToXMLFile = saveToXMLFileCVT, 
+        		desc = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_HLM_installed")
+        	}
+    	}
+    	-- dbgprint("addHLMconfig : Configuration HeadlandManagement added", 2)
+    	-- dbgprint_r(configurations["CVTaddon"], 4)
+	end
+	
+    return configurations, defaultConfigurationIds
+end
+
+--new storeCfg fs25
+function CVTaddon.getConfigurationsFromXML(self, superfunc, xmlFile, baseXMLName, baseDir, customEnvironment, isMod, storeItem)
+    local configurations, defaultConfigurationIds = superfunc(self, xmlFile, baseXMLName, baseDir, customEnvironment, isMod, storeItem)
+	-- dbgprint("addCVTconfig : Kat: "..storeItem.categoryName.." / ".."Name: "..storeItem.xmlFilename, 2)
+
+	print("################################# addNewStoreConfig")
+	-- local configurations, defaultConfigurationIds = superFunc(xmlFile, baseXMLName, baseDir, customEnvironment, isMod, storeItem)
+    -- local spec = self.spec_CVTaddon
+    local StI = ""
+    if storeItem ~= nil then
+		--
+    -- elseif configurations == nil then
+		--
+    -- elseif configurations["CVTaddon"] ~= nil then
+		--
+    -- else
+        -- StI = string.sub(storeItem.categoryName, 1, 8)
+        StI = storeItem.categoryName
+    end
+	-- local modNamez = getXMLString(xmlFile.handle, "vehicle.storeData.name")
+	-- if modNamez == nil then
+		-- modNamez = getXMLString(xmlFile.handle, "vehicle.storeData.name.en")
+	-- end
+	-- local exVehicles = string.find(tostring(modNamez), "wheelbarrow") or string.find(tostring(modNamez), "Schubkarre") or string.find(tostring(modNamez), "Taczka") 
+					   -- or string.find(tostring(modNamez), "Göweil") or string.find(tostring(modNamez), "boat") or string.find(tostring(modNamez), "boot") or string.find(tostring(modNamez), "fahrrad")
+					   -- or string.find(tostring(modNamez), "bike") or string.find(tostring(modNamez), "bicycle") or string.find(tostring(modNamez), "roller")
+	-- local addXtraCats = string.find(tostring(StI), "sdf") or string.find(tostring(StI), "SDF") or string.find(tostring(StI), "LSFM") or string.find(tostring(StI), "CLAAS")
+						-- or string.find(tostring(StI), "JOHN") or string.find(tostring(StI), "DEUTZ") or string.find(tostring(StI), "JD") or string.find(tostring(StI), "PACK")
+    local int2ndVehicles = StI == "GRAPEVEHICLES" or StI == "OLIVEVEHICLES" or StI == "FORAGEHARVESTERCUTTERS" or StI == "MOWERVEHICLES" or StI == "SLURRYVEHICLES"
+    local intVehicles = StI == "TRACTORSS" or StI == "TRACTORSM" or StI == "TRACTORSL" or StI == "HARVESTERS" or StI == "FORAGEHARVESTERS" 
+						or StI == "POTATOVEHICLES" or StI == "BEETVEHICLES" or StI == "SUGARCANEVEHICLES" or StI == "COTTONVEHICLES" or StI == "MISCVEHICLES" 
+						or StI == "FRONTLOADERVEHICLES" or StI == "TELELOADERVEHICLES" or StI == "SKIDSTEERVEHICLES" or StI == "WHEELLOADERVEHICLES" or StI == "WOODHARVESTING" 
+						or StI == "FORKLIFTS" or StI == "ANIMALSVEHICLES" or StI == "CARS" or StI == "TRUCKS" or StI == "VEGETABLEVEHICLES" or StI == "ANIMALS" 
+	-- print("CVTa ShopCat: " .. tostring(StI))
+    -- if intVehicles or int2ndVehicles then
+		local isVario = true -- ToDo: find a way to check if one of a motorconfig has cvt, when the first one is a manual shift
+ 
+
+		delete(xmlFile.handle)
+		-- if isVario == true then -- hörhin
+			-- local cfg_off = g_i18n:getText("text_CVT_notInstalled_short")
+			-- local cfg_on = g_i18n:getText("text_CVT_Installed_short")
+			configurations["CVTaddon"] = {
+				{name = "text_CVT_notInstalled_short", index = 1, isDefault = true, price = 0,  dailyUpkeep = 0, isSelectable = true, desc ="aUs"},
+				-- {name = g_i18n:getText("text_CVT_notInstalled_short"), index = 1, isDefault = true, price = 0,  dailyUpkeep = 0, isSelectable = true, desc ="aUs"},
+				{name = "text_CVT_Installed_short",  index = 2, isDefault = false, price = 0,    dailyUpkeep = 1, isSelectable = true, desc ="tescht"}
+				-- {name = g_i18n:getText("text_CVT_Installed_short"),  index = 2, isDefault = false, price = 0,    dailyUpkeep = 1, isSelectable = true, desc ="tescht"}
+				
+				-- {name = g_i18n.modEnvironments[CultivatorSettings.MOD_NAME]:getText("text_DC_shallow"), index = 2, isDefault = false, isSelectable = true, price = 0, dailyUpkeep = 0, desc = g_i18n.modEnvironments[CultivatorSettings.MOD_NAME]:getText("text_DC_shallow")},
+				
+			}
+			-- dbgprint("addConfig : Configuration CVTaddonCfg added", 2)
+			
+			-- dbgprint_r(configurations["CVTaddonCfg"], 1)
+		-- end -- if isVario == true then
+	-- end  -- if intVehicles or int2ndVehicles then
+	
+    return configurations, defaultConfigurationIds
+end
 
 function CVTaddon:onPreLoad(savegame)
 	print("################################# onPreLoad")
 	local spec = self.spec_CVTaddon
-    local CvtConfigId = Utils.getNoNil(self.configurations["CVTaddon"], 0)
+    local CvtConfigActive = Utils.getNoNil(self.configurations["CVTaddon"], 0)
 	-- print("CVTa: onPreLoad CvtConfigId noNIL " .. CvtConfigId)
     if savegame ~= nil then
-        if CvtConfigId > 0 then
-            CvtConfigId = savegame.xmlFile:getValue(savegame.key .. ".FS25_CVT_Addon.CVTaddon#CvtConfigId", CvtConfigId)
+        if CvtConfigActive == 1 then
+            CvtConfigActive = savegame.xmlFile:getValue(savegame.key .. ".FS25_CVT_Addon.CVTaddon#CvtConfigActive", CvtConfigActive)
+            CvtConfigId 	= savegame.xmlFile:getValue(savegame.key .. ".FS25_CVT_Addon.CVTaddon#CvtConfigId", CvtConfigId)
             -- if CvtConfigId < 1 or CvtConfigId > 8 then
                 -- CvtConfigId = 1
             -- end
             self.configurations["CVTaddon"] = CvtConfigId
-			-- spec.CVTconfig = self.configurations["CVTaddon"] -- spec nil
+			-- spec.CVTconfig = self.configurations["CVTaddonCfg"] -- spec nil
 			-- print("CVTa: onPreLoad CvtConfigId " .. CvtConfigId)
 			
         end
@@ -494,56 +673,56 @@ function CVTaddon:onPreLoad(savegame)
     end
 end
 
-function initNewStoreConfig()
-	print("################################# initNewStoreConfig")
-end
-
 function CVTaddon:onPostLoad(savegame, mission, node, state)
 -- load hud settings
 	print("################################# onPostLoad")
 	if g_currentMission:getIsServer() then
-        if g_currentMission.missionInfo.savegameDirectory ~= nil and fileExists(g_currentMission.missionInfo.savegameDirectory .. "/CVTaddonHUD.xml") then
-            local xmlFile4HUD = XMLFile.load("CVTaddon", g_currentMission.missionInfo.savegameDirectory .. "/CVTaddonHUD.xml")
-            if xmlFile4HUD ~= nil then
-                CVTaddon.HUDpos = xmlFile4HUD:getInt("CVTaddon.nvHUDpos", CVTaddon.HUDpos)
-                CVTaddon.HUDsize = xmlFile4HUD:getInt("CVTaddon.nvHUDsize", CVTaddon.HUDsize)
-                xmlFile4HUD:delete()
-				CVTaddon.XMLloaded = 1
-				state = CVTaddon.HUDpos
-				if state == 1 then
-					CVTaddon.PoH = 1
-				elseif state == 2 then
-					CVTaddon.PoH = 2
-				elseif state == 3 then
-					CVTaddon.PoH = 3
-				end
-				print("CVTa: CVTaddonHUD.xml data loaded")
-			else
+        -- if g_currentMission.missionInfo.savegameDirectory ~= nil and fileExists(g_currentMission.missionInfo.savegameDirectory .. "/CVTaddonHUD.xml") then
+            -- local xmlFile4HUD = 1
+            -- local xmlFile4HUD = XMLFile.load("CVTaddon", g_currentMission.missionInfo.savegameDirectory .. "/CVTaddonHUD.xml")
+            -- if xmlFile4HUD ~= nil then
+                -- CVTaddon.HUDpos = xmlFile4HUD:getInt("CVTaddon.nvHUDpos", CVTaddon.HUDpos)
+                -- CVTaddon.HUDsize = xmlFile4HUD:getInt("CVTaddon.nvHUDsize", CVTaddon.HUDsize)
+                -- xmlFile4HUD:delete()
+				-- CVTaddon.XMLloaded = 1
+				-- state = CVTaddon.HUDpos
+				-- if state == 1 then
+					-- CVTaddon.PoH = 1
+				-- elseif state == 2 then
+					-- CVTaddon.PoH = 2
+				-- elseif state == 3 then
+					-- CVTaddon.PoH = 3
+				-- end
+				-- print("CVTa: CVTaddonHUD.xml data loaded")
+			-- else
 				CVTaddon.XMLloaded = 2
 				CVTaddon.HUDpos = 1
 				CVTaddon.PoH = 1
-				print("CVTa: CVTaddonHUD.xml data not found - use default")
-            end
-		end
+				-- print("CVTa: CVTaddonHUD.xml data not found - use default")
+            -- end
+		-- end
 	end
 -- load vehicle setting
 	local spec = self.spec_CVTaddon
-	local CvtConfigId = Utils.getNoNil(self.configurations["CVTaddon"], 4) --back
+	local CvtConfigActive = Utils.getNoNil(self.configurations["CVTaddon"], 0) -- BACK
 	if g_client ~= nil then
 		if self.spec_motorized ~= nil then
 			if spec == nil then return end
 			spec.CVTcfgExists = self.configurations["CVTaddon"] ~= nil and self.configurations["CVTaddon"] ~= 0
 			
 			if savegame ~= nil then
-				local xmlFile = savegame.xmlFile
-				local key = savegame.key .. ".FS25_CVT_Addon.CVTaddon"
+				-- local xmlFile = savegame.xmlFile
+				-- local key = savegame.key .. ".FS25_CVT_Addon.CVTaddon"
+				local schemaSavegame = Vehicle.xmlSchemaSavegame
+				local key = CVTaddon.MOD_NAME..".CVTaddon"
 				spec.vOne = xmlFile:getValue(key.."#vOne", spec.vOne)
 				spec.vTwo = xmlFile:getValue(key.."#vTwo", spec.vTwo)
 				spec.vThree = xmlFile:getValue(key.."#vThree", spec.vThree)
-				spec.CVTCanStart = xmlFile:getValue(key.."#CVTCanStart", spec.CVTCanStart)
+				-- spec.CVTCanStart = xmlFile:getValue(key.."#CVTCanStart", spec.CVTCanStart)
 				spec.vFive = 0
 				-- spec.vFive = xmlFile:getValue(key.."#vFive", spec.vFive)
 				spec.autoDiffs = xmlFile:getValue(key.."#autoDiffs", spec.autoDiffs)
+				spec.CVTcfgActive = xmlFile:getValue(key.."#CvtConfigActive", spec.CVTcfgActive)
 				spec.CVTconfig = xmlFile:getValue(key.."#CvtConfigId", spec.CVTconfig)
 				spec.CVTdamage = xmlFile:getValue(key.."#CVTdamage", spec.CVTdamage)
 				
@@ -555,19 +734,28 @@ function CVTaddon:onPostLoad(savegame, mission, node, state)
 		end
 	end -- g_client
 
-	-- self.configurations["CVTaddon"] = spec.CVTcfgExists and 7 or 6 or 5 or 4 or 3 or 2 or 1
-	-- self.configurations["CVTaddon"] = spec.CVTconfig and 1 or 2 or 3 or 4 or 5 or 6 or 7 or 8
+	-- self.configurations["CVTaddonCfg"] = spec.CVTcfgExists and 7 or 6 or 5 or 4 or 3 or 2 or 1
+	-- self.configurations["CVTaddonCfg"] = spec.CVTconfig and 1 or 2 or 3 or 4 or 5 or 6 or 7 or 8
 	if spec.CVTcfgExists then
 		-- self.configurations["CVTaddonConfigs"] = spec.CVTconfig
-		if CvtConfigId > 0 then
+		if CvtConfigActive == 1 then
+			spec.CVTcfgActive = CvtConfigActive
+			
+			-- set defult Config
+			spec.CVTconfig = 4 -- BACK
 			-- spec.CVTconfig = CvtConfigId
-			spec.CVTconfig = 1 -- BACK
+		elseif CvtConfigActive == 0 then
+			spec.CVTcfgActive = CvtConfigActive
+			
+			-- set Config off
+			spec.CVTconfig = 8
 		end
 	end
 	
 	gU_targetSelf = self
 
 	print("CVTa: CvtConfigId spec.CVTconfig " .. spec.CVTconfig)
+	print("CVTa: CvtConfigActive spec.CVTconfig " .. spec.CvtConfigActive)
 
  -- to make it easier read with dashbord-live
 	spec.forDBL_pedalpercent = tostring(self.spec_motorized.motor.lastAcceleratorPedal*100)
@@ -649,10 +837,10 @@ end
 CVTaddon.PoH = 1; -- Position of HUD
 CVTaddon.HUDpos = 1;
 CVTaddon.XMLloaded = 0;
-CVTaddon.HUDposChanged = {}
-CVTaddon.HUDposChanged[1] = g_i18n.modEnvironments[CVTaddon.ModName]:getText("selection_CVTaddonHUDpos_1")
-CVTaddon.HUDposChanged[2] = g_i18n.modEnvironments[CVTaddon.ModName]:getText("selection_CVTaddonHUDpos_2")
-CVTaddon.HUDposChanged[3] = g_i18n.modEnvironments[CVTaddon.ModName]:getText("selection_CVTaddonHUDpos_3")
+-- CVTaddon.HUDposChanged = {}
+-- CVTaddon.HUDposChanged[1] = g_i18n.modEnvironments[CVTaddon.ModName]:getText("selection_CVTaddonHUDpos_1")
+-- CVTaddon.HUDposChanged[2] = g_i18n.modEnvironments[CVTaddon.ModName]:getText("selection_CVTaddonHUDpos_2")
+-- CVTaddon.HUDposChanged[3] = g_i18n.modEnvironments[CVTaddon.ModName]:getText("selection_CVTaddonHUDpos_3")
 
 
 -- make localizations available
@@ -664,31 +852,32 @@ end
 function CVTaddon:saveToXMLFile(xmlFile, key, usedModNames)
 	
 	print("################################# saveToXMLFile")
-	if g_currentMission.missionInfo.isValid then
-        local xmlFile4HUD = XMLFile.create("CVTaddon", g_currentMission.missionInfo.savegameDirectory .. "/CVTaddonHUD.xml", "CVTaddon")
-        if xmlFile4HUD ~= nil then
-            xmlFile4HUD:setInt("CVTaddon.nvHUDpos", CVTaddon.HUDpos)
-            xmlFile4HUD:save()
-            xmlFile4HUD:delete()
-			print("CVTa: CVTaddonHUD.xml data saved")
-        end
-    end
+	-- if g_currentMission.missionInfo.isValid then
+        -- local xmlFile4HUD = XMLFile.create("CVTaddon", g_currentMission.missionInfo.savegameDirectory .. "/CVTaddonHUD.xml", "CVTaddon")
+        -- if xmlFile4HUD ~= nil then
+            -- xmlFile4HUD:setInt("CVTaddon.nvHUDpos", CVTaddon.HUDpos)
+            -- xmlFile4HUD:save()
+            -- xmlFile4HUD:delete()
+			-- print("CVTa: CVTaddonHUD.xml data saved")
+        -- end
+    -- end
 	
 	if self.spec_motorized ~= nil then
 		local spec = self.spec_CVTaddon
 		-- if spec.CVTconfig ~= nil or spec.CVTconfig ~= 0
-		-- spec.CVTconfig = self.configurations["CVTaddon"] or 1 -- BACK
-		spec.CVTconfig = self.configurations["CVTaddon"] or 1 -- forced cfg
+		-- spec.CVTconfig = self.configurations["CVTaddonCfg"] or 1 -- BACK
+		spec.CvtConfigActive = self.configurations["CVTaddon"] or 0
 		-- #configPart
 		if spec.isVarioTM then
 			xmlFile:setValue(key.."#vOne", spec.vOne)
 			xmlFile:setValue(key.."#vTwo", spec.vTwo)
 			xmlFile:setValue(key.."#vThree", spec.vThree)
-			xmlFile:setValue(key.."#CVTCanStart", spec.CVTCanStart)
+			-- xmlFile:setValue(key.."#CVTCanStart", spec.CVTCanStart)
 			xmlFile:setValue(key.."#autoDiffs", spec.autoDiffs)
 			xmlFile:setValue(key.."#CVTdamage", spec.CVTdamage)
 		end
 		xmlFile:setValue(key.."#CvtConfigId", spec.CVTconfig)
+		xmlFile:setValue(key.."#CvtConfigActive", spec.CvtConfigActive)
 
 		print("CVT_Addon: saved.")
 	end
@@ -699,21 +888,74 @@ end
 function CVTaddon:BrakeRamps() -- BREMSRAMPEN - Ab kmh X wird die Betriebsbremse automatisch aktiv
 	local spec = self.spec_CVTaddon
 	if g_client ~= nil then
-		
-		-- if spec.vThree == 5 or spec.vThree == nil then
-			-- spec.vThree = 1
-		-- else
-			-- spec.vThree = spec.vThree + 1
-		-- end
-		if spec.CVTconfig == 11 or spec.CVTconfig == nil then
-			spec.CVTconfig = 1
-		else
-			spec.CVTconfig = spec.CVTconfig + 1
+		-- local spec = self.spec_CVTaddon
+		if cvtaDebugCVTon then
+			print("BrRamp Taste gedrückt vThree: "..tostring(spec.vThree))
+			print("BrRamp Taste gedrückt lBFSL: "..self.spec_motorized.motor.lowBrakeForceSpeedLimit)
 		end
-		print("Config: " .. spec.CVTconfig)
-		
+		if self.CVTaddon == nil then
+			return
+		end
+		if not CVTaddon.eventActiveV4 then
+			return
+		end
+		if (spec.vThree == 1) then -- BRamp 1
+			spec.forDBL_brakeramp = tostring(0) -- off / 1-2 km/h vanilla lowBrakeForceSpeedLimit: 0.00027777777777778
+			if cvtaDebugCVTon then
+				print("BrRamp 1 vThree: "..tostring(spec.vThree))
+				print("BrRamp 1 lBFSL: "..self.spec_motorized.motor.lowBrakeForceSpeedLimit)
+			end
+		end
+		if (spec.vThree == 2) then -- BRamp 2
+			spec.forDBL_brakeramp = tostring(4) -- km/h
+			if cvtaDebugCVTon then
+				print("BrRamp 2 vThree: "..tostring(spec.vThree))
+				print("BrRamp 2 lBFSL: "..self.spec_motorized.motor.lowBrakeForceSpeedLimit)
+			end
+		end
+		if (spec.vThree == 3) then -- BRamp 3
+			spec.forDBL_brakeramp = tostring(8) -- km/h
+			if cvtaDebugCVTon then
+				print("BrRamp 3 vThree: "..tostring(spec.vThree))
+				print("BrRamp 3 lBFSL: "..self.spec_motorized.motor.lowBrakeForceSpeedLimit)
+			end
+		end
+		if (spec.vThree == 4) then -- BRamp 4
+			spec.forDBL_brakeramp = tostring(15) -- km/h
+			if cvtaDebugCVTon then
+				print("BrRamp 4 vThree: "..tostring(spec.vThree))
+				print("BrRamp 4 lBFSL: "..self.spec_motorized.motor.lowBrakeForceSpeedLimit)
+			end
+		end
+		if (spec.vThree == 5) then -- BRamp 5
+			spec.forDBL_brakeramp = tostring(17) -- km/h
+			if cvtaDebugCVTon then
+				print("BrRamp 5 vThree: "..tostring(spec.vThree))
+				print("BrRamp 5 lBFSL: "..self.spec_motorized.motor.lowBrakeForceSpeedLimit)
+			end
+		end
+		if spec.vThree == 5 or spec.vThree == nil then
+			spec.vThree = 1
+		else
+			spec.vThree = spec.vThree + 1
+		end
+		-- to make it easier read with dashbord-live
+		if cvtaDebugCVTon then
+			print("BrRamp Taste losgelassen vThree: "..tostring(spec.vThree))
+			print("BrRamp Taste losgelassen lBFSL: "..self.spec_motorized.motor.lowBrakeForceSpeedLimit)
+		end
 		self:raiseDirtyFlags(spec.dirtyFlag)
-		
+		if g_server ~= nil then
+			g_server:broadcastEvent(SyncClientServerEvent.new(self, spec.vOne, spec.vTwo, spec.vThree, spec.CVTCanStart, spec.vFive, spec.autoDiffs, spec.isVarioTM, spec.isTMSpedal, spec.CVTconfig, spec.forDBL_warnheat, spec.forDBL_critheat, spec.forDBL_warndamage, spec.forDBL_critdamage, spec.CVTdamage, spec.HandgasPercent, spec.ClutchInputValue), nil, nil, self)
+		else
+			g_client:getServerConnection():sendEvent(SyncClientServerEvent.new(self, spec.vOne, spec.vTwo, spec.vThree, spec.CVTCanStart, spec.vFive, spec.autoDiffs, spec.isVarioTM, spec.isTMSpedal, spec.CVTconfig, spec.forDBL_warnheat, spec.forDBL_critheat, spec.forDBL_warndamage, spec.forDBL_critdamage, spec.CVTdamage, spec.HandgasPercent, spec.ClutchInputValue))
+		end
+		if debug_for_DBL then
+			print("CVTa BR event: " .. spec.vThree)		
+			print("CVTa BR 4_dbl: " .. spec.forDBL_brakeramp)		
+		end
+		spec.forDBL_vmaxforward = self.spec_motorized.motor.maxForwardSpeed * math.pi
+		spec.forDBL_vmaxbackward = self.spec_motorized.motor.maxBackwardSpeed * math.pi
 	end --g_client
 end -- BrakeRamps
 
@@ -747,16 +989,16 @@ function CVTaddon:AccRampsToggle() -- BESCHLEUNIGUNGSRAMPEN
 		end
 		
 		if (spec.vTwo == 1) then -- Ramp 1 +1
-			-- self.spec_motorized.motor.accelerationLimit = 0.35
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce-0.10))
+			self.spec_motorized.motor.accelerationLimit = 0.35
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce-0.10))
 			if cvtaDebugCVTon then
 				print("AccRamp 1 vTwo: "..tostring(spec.vTwo))
 				print("AccRamp 1 acc0.5: "..self.spec_motorized.motor.accelerationLimit)
 			end
 		end
 		if (spec.vTwo == 2) then -- Ramp 2 +1
-			-- self.spec_motorized.motor.accelerationLimit = 0.80
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce))
+			self.spec_motorized.motor.accelerationLimit = 0.80
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce))
 			
 			if cvtaDebugCVTon then
 				print("AccRamp 2 vTwo: "..tostring(spec.vTwo))
@@ -764,16 +1006,16 @@ function CVTaddon:AccRampsToggle() -- BESCHLEUNIGUNGSRAMPEN
 			end
 		end
 		if (spec.vTwo == 3) then -- Ramp 3 +1
-			-- self.spec_motorized.motor.accelerationLimit = 1.20
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.03))
+			self.spec_motorized.motor.accelerationLimit = 1.20
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.03))
 			if cvtaDebugCVTon then
 				print("AccRamp 3 vTwo: "..tostring(spec.vTwo))
 				print("AccRamp 3 acc1.5: "..self.spec_motorized.motor.accelerationLimit)
 			end
 		end
 		if (spec.vTwo == 4) then -- Ramp 4 +1
-			-- self.spec_motorized.motor.accelerationLimit = 1.70 -- Standard
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.08))
+			self.spec_motorized.motor.accelerationLimit = 1.70 -- Standard
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.08))
 			-- self.spec_motorized.motor.peakMotorTorque = self.spec_motorized.motor.peakMotorTorque * 0.5
 			if cvtaDebugCVTon then
 				print("AccRamp 4 vTwo: "..tostring(spec.vTwo))
@@ -812,8 +1054,8 @@ function CVTaddon:AccRampsSet1() -- BESCHLEUNIGUNGSRAMPEN I
 		spec.forDBL_accramp = tostring(1)
 
 -- Ramp 1 +1
-		-- self.spec_motorized.motor.accelerationLimit = 0.35
-		-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce-0.10))
+		self.spec_motorized.motor.accelerationLimit = 0.35
+		self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce-0.10))
 		if cvtaDebugCVTon then
 			print("AccRamp1 Taste gedrückt vTwo: "..tostring(spec.vTwo))
 			print("AccRamp1 Taste gedrückt acc: "..self.spec_motorized.motor.accelerationLimit)
@@ -842,8 +1084,8 @@ function CVTaddon:AccRampsSet2() -- BESCHLEUNIGUNGSRAMPEN II
 		-- DBL convert
 		spec.forDBL_accramp = tostring(2)
 
-		-- self.spec_motorized.motor.accelerationLimit = 0.80
-		-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce))
+		self.spec_motorized.motor.accelerationLimit = 0.80
+		self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce))
 		if cvtaDebugCVTon then
 			print("AccRamp2 Taste gedrückt vTwo: "..tostring(spec.vTwo))
 			print("AccRamp2 Taste gedrückt acc: "..self.spec_motorized.motor.accelerationLimit)
@@ -872,8 +1114,8 @@ function CVTaddon:AccRampsSet3() -- BESCHLEUNIGUNGSRAMPEN III
 		-- DBL convert
 		spec.forDBL_accramp = tostring(3)
 
-		-- self.spec_motorized.motor.accelerationLimit = 1.20
-		-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.03))
+		self.spec_motorized.motor.accelerationLimit = 1.20
+		self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.03))
 		if cvtaDebugCVTon then
 			print("AccRamp3 Taste gedrückt vTwo: "..tostring(spec.vTwo))
 			print("AccRamp3 Taste gedrückt acc: "..self.spec_motorized.motor.accelerationLimit)
@@ -902,8 +1144,8 @@ function CVTaddon:AccRampsSet4() -- BESCHLEUNIGUNGSRAMPEN IV
 		-- DBL convert
 		spec.forDBL_accramp = tostring(4)
 
-		-- self.spec_motorized.motor.accelerationLimit = 1.70 -- Standard
-		-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.08))
+		self.spec_motorized.motor.accelerationLimit = 1.70 -- Standard
+		self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.08))
 		if cvtaDebugCVTon then
 			print("AccRamp4 Taste gedrückt vTwo: "..tostring(spec.vTwo))
 			print("AccRamp4 Taste gedrückt acc: "..self.spec_motorized.motor.accelerationLimit)
@@ -956,16 +1198,16 @@ function CVTaddon:AccRamps() -- BESCHLEUNIGUNGSRAMPEN - Motorbremswirkung wird k
 		end
 		
 		if (spec.vTwo == 1) then -- Ramp 1 +1
-			-- self.spec_motorized.motor.accelerationLimit = 0.35
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce-0.10))
+			self.spec_motorized.motor.accelerationLimit = 0.35
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce-0.10))
 			if cvtaDebugCVTon then
 				print("AccRamp 1 vTwo: "..tostring(spec.vTwo))
 				print("AccRamp 1 acc0.5: "..self.spec_motorized.motor.accelerationLimit)
 			end
 		end
 		if (spec.vTwo == 2) then -- Ramp 2 +1
-			-- self.spec_motorized.motor.accelerationLimit = 0.80
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce))
+			self.spec_motorized.motor.accelerationLimit = 0.80
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce))
 			
 			if cvtaDebugCVTon then
 				print("AccRamp 2 vTwo: "..tostring(spec.vTwo))
@@ -973,16 +1215,16 @@ function CVTaddon:AccRamps() -- BESCHLEUNIGUNGSRAMPEN - Motorbremswirkung wird k
 			end
 		end
 		if (spec.vTwo == 3) then -- Ramp 3 +1
-			-- self.spec_motorized.motor.accelerationLimit = 1.20
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.03))
+			self.spec_motorized.motor.accelerationLimit = 1.20
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.03))
 			if cvtaDebugCVTon then
 				print("AccRamp 3 vTwo: "..tostring(spec.vTwo))
 				print("AccRamp 3 acc1.5: "..self.spec_motorized.motor.accelerationLimit)
 			end
 		end
 		if (spec.vTwo == 4) then -- Ramp 4 +1
-			-- self.spec_motorized.motor.accelerationLimit = 1.70 -- Standard
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.08))
+			self.spec_motorized.motor.accelerationLimit = 1.70 -- Standard
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.08))
 			-- self.spec_motorized.motor.peakMotorTorque = self.spec_motorized.motor.peakMotorTorque * 0.5
 			if cvtaDebugCVTon then
 				print("AccRamp 4 vTwo: "..tostring(spec.vTwo))
@@ -1038,16 +1280,16 @@ function CVTaddon:AccRampsD()
 		end
 		
 		if (spec.vTwo == 1) then -- Ramp 1 +1
-			-- self.spec_motorized.motor.accelerationLimit = 0.35
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce-0.10))
+			self.spec_motorized.motor.accelerationLimit = 0.35
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce-0.10))
 			if cvtaDebugCVTon then
 				print("AccRamp 1 vTwo: "..tostring(spec.vTwo))
 				print("AccRamp 1 acc0.5: "..self.spec_motorized.motor.accelerationLimit)
 			end
 		end
 		if (spec.vTwo == 2) then -- Ramp 2 +1
-			-- self.spec_motorized.motor.accelerationLimit = 0.80
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce))
+			self.spec_motorized.motor.accelerationLimit = 0.80
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce))
 			
 			if cvtaDebugCVTon then
 				print("AccRamp 2 vTwo: "..tostring(spec.vTwo))
@@ -1055,16 +1297,16 @@ function CVTaddon:AccRampsD()
 			end
 		end
 		if (spec.vTwo == 3) then -- Ramp 3 +1
-			-- self.spec_motorized.motor.accelerationLimit = 1.20
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.03))
+			self.spec_motorized.motor.accelerationLimit = 1.20
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.03))
 			if cvtaDebugCVTon then
 				print("AccRamp 3 vTwo: "..tostring(spec.vTwo))
 				print("AccRamp 3 acc1.5: "..self.spec_motorized.motor.accelerationLimit)
 			end
 		end
 		if (spec.vTwo == 4) then -- Ramp 4 +1
-			-- self.spec_motorized.motor.accelerationLimit = 1.70 -- Standard
-			-- self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.08))
+			self.spec_motorized.motor.accelerationLimit = 1.70 -- Standard
+			self.spec_motorized.motor.lowBrakeForceScale = (math.abs(spec.calcBrakeForce+0.08))
 			-- self.spec_motorized.motor.peakMotorTorque = self.spec_motorized.motor.peakMotorTorque * 0.5
 			if cvtaDebugCVTon then
 				print("AccRamp 4 vTwo: "..tostring(spec.vTwo))
@@ -1547,10 +1789,8 @@ function CVTaddon:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSelec
 	end
 	-- print("CVTa DayTemp: " .. tostring(currentDayTemp))
 	if spec.CVTconfig == 8 or spec.CVTconfig == 0 or spec.CVTconfig == 9 or spec.CVTconfig == 10 or spec.CVTconfig == 11 then
-		-- spec.CVTCanStart = true
+		spec.CVTCanStart = true
 	end
-	
-	-- print("spec.ClutchInputValue: " .. tostring(spec.ClutchInputValue))
 	
 	-- #GLOWIN-TEMP-SYNC
 	-- Data Sync's that will not sync by default  (base code by glowin)
@@ -2468,7 +2708,7 @@ function CVTaddon:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSelec
 								
 							else
 								-- bei Schlepper Leermasse
-								self.spec_motorized.motor.lowBrakeForceScale = math.abs( math.max( math.min( (1-(self.spec_motorized.motor.lastMotorRpm/self.spec_motorized.motor.maxRpm))*(1-(self:getLastSpeed()/(self.spec_motorized.motor.maxForwardSpeed*math.pi)) * 0.75) ,0.25),0.1) )
+								self.spec_motorized.motor.lowBrakeForceScale = math.abs( math.max(math.min( (1-(self.spec_motorized.motor.lastMotorRpm/self.spec_motorized.motor.maxRpm))*(1-(self:getLastSpeed()/(self.spec_motorized.motor.maxForwardSpeed*math.pi) * 0.75) ),0.25), (0.1 ) ))
 								-- start at ca. 0.16
 							end
 
@@ -2482,9 +2722,9 @@ function CVTaddon:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSelec
 						
 						if spec.vTwo == 1 and spec.isVarioTM then
 							if self:getLastSpeed() <= (self.spec_motorized.motor.maxForwardSpeed*math.pi)/(4.2) then
-								self.spec_motorized.motor.accelerationLimit = 0.20 -- I
+								self.spec_motorized.motor.accelerationLimit = 0.15 -- I
 							else
-								self.spec_motorized.motor.accelerationLimit = 0.5 -- Standard
+								self.spec_motorized.motor.accelerationLimit = 0.6 -- Standard
 							end
 							if (self:getTotalMass() - self:getTotalMass(true)) ~= 0 then -- 20 97 																							-- BR 1 
 								self.spec_motorized.motor.lowBrakeForceScale = math.max(math.min((0.5-((self:getTotalMass() - self:getTotalMass(true)) /97 ))*(0.8-(self:getLastSpeed()/100)), 0.05*( 1-(self:getTotalMass() - self:getTotalMass(true))/100 ) ), 0.01)
@@ -2500,9 +2740,9 @@ function CVTaddon:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSelec
 						
 						if spec.vTwo == 2 and spec.isVarioTM then
 							if self:getLastSpeed() <= (self.spec_motorized.motor.maxForwardSpeed*math.pi)/(3.2) then
-								self.spec_motorized.motor.accelerationLimit = 0.40 -- II
+								self.spec_motorized.motor.accelerationLimit = 0.30 -- II
 							else
-								self.spec_motorized.motor.accelerationLimit = 0.9 -- Standard
+								self.spec_motorized.motor.accelerationLimit = 1.0 -- Standard
 							end
 							if (self:getTotalMass() - self:getTotalMass(true)) ~= 0 then -- 25 98 																								-- BR 2
 								self.spec_motorized.motor.lowBrakeForceScale = math.max(math.min((0.5-((self:getTotalMass() - self:getTotalMass(true)) /98 ))*(0.8-(self:getLastSpeed()/100)), 0.1*( 1-(self:getTotalMass() - self:getTotalMass(true))/100 ) ), 0.01)
@@ -2518,7 +2758,7 @@ function CVTaddon:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSelec
 						
 						if spec.vTwo == 3 and spec.isVarioTM then
 							if self:getLastSpeed() <= (self.spec_motorized.motor.maxForwardSpeed*math.pi)/(2.6) then
-								self.spec_motorized.motor.accelerationLimit = 0.50 -- III
+								self.spec_motorized.motor.accelerationLimit = 0.40 -- III
 							else
 								self.spec_motorized.motor.accelerationLimit = 1.0 -- Standard
 							end
@@ -2677,11 +2917,6 @@ function CVTaddon:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSelec
 								-- end -- smooth
 							end
 							
-							-- Factor für Drehmoment/rpm ref. motorLoad
-							-- local refKn = (self.spec_motorized.motor.smoothedLoadPercentage )
-							
-							-- print("actualLoadPercentage: " .. tostring( self.spec_motorized.motor.actualLoadPercentage))
-							
 														
 							-- Nm kurven für unterschiedliche Lasten, Berücksichtigung pto
 							if self.spec_motorized.motor.smoothedLoadPercentage >= 0.1 and self.spec_motorized.motor.smoothedLoadPercentage <= 0.4 then
@@ -2731,15 +2966,6 @@ function CVTaddon:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSelec
 								self.spec_motorized.motor.lastMotorRpm = math.min(math.max((self.spec_motorized.motor.lastMotorRpm * 1.025 * mcRPMvar), self.spec_motorized.motor.lastPtoRpm*0), self.spec_motorized.motor.maxRpm)
 								self.spec_motorized.motor.gearRatio = self.spec_motorized.motor.gearRatio * 3 + (self.spec_motorized.motor.rawLoadPercentage*19)
 								self.spec_motorized.motor.minForwardGearRatio = self.spec_motorized.motor.minForwardGearRatio + self.spec_motorized.motor.smoothedLoadPercentage*15
-							end
-							
-							-- Drehzahl Erhöhung sobald Pedal aktiviert wird zur Fahrt
-							if math.max(0, self.spec_drivable.axisForward) >= 0.01 and self:getLastSpeed() <= 4 then
-								self.spec_motorized.motor.lastMotorRpm = math.max(math.max(math.min(self.spec_motorized.motor.lastMotorRpm * 1.01, self.spec_motorized.motor.maxRpm*0.99), self.spec_motorized.motor.minRpm+323), self.spec_motorized.motor.lastPtoRpm*0)
-								if cvtaDebugCVTon == true then
-									print("## Drehzahl Erhöhung sobald Pedal aktiviert wird zur Fahrt: " .. math.max(math.max(math.min(self.spec_motorized.motor.lastMotorRpm * 1.015, self.spec_motorized.motor.maxRpm*0.99), self.spec_motorized.motor.minRpm+323), self.spec_motorized.motor.lastPtoRpm*0))
-									print("## self:getDamageAmount(): " .. self:getDamageAmount())
-								end
 							end
 
 							-- Wenn ein Anbaugerät zu schwere Last erzeugt, schafft es die 4. Beschleunigungsrampe nicht oder nimmt Schaden
@@ -3839,16 +4065,9 @@ function CVTaddon:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSelec
 					if spec.vFive == nil then
 						spec.vFive = 0
 					end
-					
-					-- ToDo: 
-					-- 		no half up when game out of focus (Schubregler ! )
-					
 					if spec.HandgasPercent ~= nil then					-- HG per axis
 						spec.vFive = math.max(math.floor(10*spec.HandgasPercent), 0)
-						-- print(tostring(spec.HandgasPercent))
-						-- print(tostring( g_gameStateManager:getGameState() ))
-						-- :onGameStateChanged
-						
+						-- print(tostring(spec.moveRpmL))
 						if spec.HandgasPercent > 0 then
 							if self.spec_motorized.motor.smoothedLoadPercentage <= 0.8 then
 								self.spec_motorized.motor.lastMotorRpm = math.max(self.spec_motorized.motor.lastMotorRpm, math.max(self.spec_motorized.motor.minRpm+(self.spec_motorized.motor.maxRpm-self.spec_motorized.motor.minRpm) * spec.HandgasPercent, self.spec_motorized.motor.minRpm) )
@@ -3865,10 +4084,8 @@ function CVTaddon:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSelec
 					
 				-- Elektro Stapler
 					if spec.CVTconfig == 10 then
-						if self.spec_motorized.motor.lastAcceleratorPedal > 0.01 then -- no zero speed in fs25
-							self.spec_motorized.motor.maxForwardSpeed = self.spec_motorized.motor.maxForwardSpeedOrigin / spec.vOne * math.abs(self.spec_motorized.motor.lastAcceleratorPedal)
-							self.spec_motorized.motor.maxBackwardSpeed =self.spec_motorized.motor.maxBackwardSpeedOrigin/ spec.vOne * math.abs(self.spec_motorized.motor.lastAcceleratorPedal)
-						end
+						self.spec_motorized.motor.maxForwardSpeed = self.spec_motorized.motor.maxForwardSpeedOrigin / spec.vOne * math.abs(self.spec_motorized.motor.lastAcceleratorPedal)
+						self.spec_motorized.motor.maxBackwardSpeed =self.spec_motorized.motor.maxBackwardSpeedOrigin/ spec.vOne * math.abs(self.spec_motorized.motor.lastAcceleratorPedal)
 						self.spec_motorized.motor.accelerationLimit = self.spec_motorized.motor.accelerationLimit / 4 * spec.vTwo
 						self.spec_motorized.lastFuelUsage = self.spec_motorized.lastFuelUsage / 2.9 * spec.vTwo
 						-- self.spec_motorized.motor.lastMotorRpm = self.spec_motorized.motor.lastMotorRpm * 1.05 * self.spec_motorized.motor.lastAcceleratorPedal
@@ -4421,8 +4638,8 @@ function CVTaddon:onDraw(dt, mission, SpeedMeterDisplay, HUDDisplay)
 	-- fix for the issue with the göweil dlc "and g_currentMission.controlledVehicle ~= nil/self" thanks glowin
 	
 	
-	-- if g_client ~= nil and g_currentMission.controlledVehicle == self then
-	if g_client ~= nil and self.getIsControlled ~= nil and self:getIsControlled() then -- new FS25
+	if g_client ~= nil and g_currentMission.hud.controlledVehicle == self then
+	-- if g_client ~= nil and self.getIsControlled ~= nil and self:getIsControlled() then -- new FS25
 		-- motor need warmup and show it for manual transmissions.
 -- broken in fs25
 
@@ -4435,7 +4652,7 @@ function CVTaddon:onDraw(dt, mission, SpeedMeterDisplay, HUDDisplay)
 			
 			
 			
-		-- if g_currentMission.hud.isVisible and spec.isVarioTM == false and spec.CVTconfig ~= 8 and spec.CVTconfig ~= 0 and self.getIsEntered ~= nil and self:getIsEntered() then
+		if g_currentMission.hud.isVisible and spec.isVarioTM == false and spec.CVTconfig ~= 8 and spec.CVTconfig ~= 0 and self.getIsEntered ~= nil and self:getIsEntered() then
 		
 			-- local TposX = g_currentMission.hud.speedMeter.gaugeCenterX - g_currentMission.hud.speedMeter.speedIndicatorRadiusY - 0.02
 -- new referecies fs25 
@@ -4480,7 +4697,7 @@ function CVTaddon:onDraw(dt, mission, SpeedMeterDisplay, HUDDisplay)
 			if self.spec_motorized.motorTemperature.value <= 51 and self.spec_motorized.motor.lastMotorRpm > self.spec_motorized.motor.maxRpm / 1.54 then
 				spec.CVTIconMScrit:render()
 			end
-		-- end
+		end
 		
 		if spec.CVTconfig ~= 8 and CVTaddon.PoH ~= 3 then
 			-- local spec = self.spec_CVTaddon

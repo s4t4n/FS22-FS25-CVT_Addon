@@ -564,25 +564,25 @@ function addCVTconfig(self, superfunc, xmlFile, baseXMLName, baseDir, customEnvi
 		configurations["CVTaddon"] = {
         	{
         		index = 1,
-        		name = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_HLM_notInstalled_short"), 
+        		name = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_CVT_notInstalled_short"), 
         		isDefault = true,  
         		isSelectable = true, 
         		price = 0, 
         		dailyUpkeep = 0, 
         		loadFromSavegameXMLFile = loadFromSavegameXMLFileCVT, 
         		saveToXMLFile = saveToXMLFileCVT, 
-        		desc = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_HLM_notInstalled")
+        		desc = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_CVT_notInstalled_short")
         	},
         	{
         		index = 2,
-        		name = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_HLM_installed_short"), 
+        		name = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_CVT_Installed_short"), 
         		isDefault = false, 
         		isSelectable = true, 
         		price = 3000, 
         		dailyUpkeep = 0, 
         		loadFromSavegameXMLFile = loadFromSavegameXMLFileCVT, 
         		saveToXMLFile = saveToXMLFileCVT, 
-        		desc = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_HLM_installed")
+        		desc = g_i18n.modEnvironments[CVTaddon.MOD_NAME]:getText("text_CVT_Installed_short")
         	}
     	}
     	-- dbgprint("addHLMconfig : Configuration HeadlandManagement added", 2)
@@ -593,64 +593,6 @@ function addCVTconfig(self, superfunc, xmlFile, baseXMLName, baseDir, customEnvi
 end
 
 --new storeCfg fs25
-function CVTaddon.getConfigurationsFromXML(self, superfunc, xmlFile, baseXMLName, baseDir, customEnvironment, isMod, storeItem)
-    local configurations, defaultConfigurationIds = superfunc(self, xmlFile, baseXMLName, baseDir, customEnvironment, isMod, storeItem)
-	-- dbgprint("addCVTconfig : Kat: "..storeItem.categoryName.." / ".."Name: "..storeItem.xmlFilename, 2)
-
-	print("################################# addNewStoreConfig")
-	-- local configurations, defaultConfigurationIds = superFunc(xmlFile, baseXMLName, baseDir, customEnvironment, isMod, storeItem)
-    -- local spec = self.spec_CVTaddon
-    local StI = ""
-    if storeItem ~= nil then
-		--
-    -- elseif configurations == nil then
-		--
-    -- elseif configurations["CVTaddon"] ~= nil then
-		--
-    -- else
-        -- StI = string.sub(storeItem.categoryName, 1, 8)
-        StI = storeItem.categoryName
-    end
-	-- local modNamez = getXMLString(xmlFile.handle, "vehicle.storeData.name")
-	-- if modNamez == nil then
-		-- modNamez = getXMLString(xmlFile.handle, "vehicle.storeData.name.en")
-	-- end
-	-- local exVehicles = string.find(tostring(modNamez), "wheelbarrow") or string.find(tostring(modNamez), "Schubkarre") or string.find(tostring(modNamez), "Taczka") 
-					   -- or string.find(tostring(modNamez), "Göweil") or string.find(tostring(modNamez), "boat") or string.find(tostring(modNamez), "boot") or string.find(tostring(modNamez), "fahrrad")
-					   -- or string.find(tostring(modNamez), "bike") or string.find(tostring(modNamez), "bicycle") or string.find(tostring(modNamez), "roller")
-	-- local addXtraCats = string.find(tostring(StI), "sdf") or string.find(tostring(StI), "SDF") or string.find(tostring(StI), "LSFM") or string.find(tostring(StI), "CLAAS")
-						-- or string.find(tostring(StI), "JOHN") or string.find(tostring(StI), "DEUTZ") or string.find(tostring(StI), "JD") or string.find(tostring(StI), "PACK")
-    local int2ndVehicles = StI == "GRAPEVEHICLES" or StI == "OLIVEVEHICLES" or StI == "FORAGEHARVESTERCUTTERS" or StI == "MOWERVEHICLES" or StI == "SLURRYVEHICLES"
-    local intVehicles = StI == "TRACTORSS" or StI == "TRACTORSM" or StI == "TRACTORSL" or StI == "HARVESTERS" or StI == "FORAGEHARVESTERS" 
-						or StI == "POTATOVEHICLES" or StI == "BEETVEHICLES" or StI == "SUGARCANEVEHICLES" or StI == "COTTONVEHICLES" or StI == "MISCVEHICLES" 
-						or StI == "FRONTLOADERVEHICLES" or StI == "TELELOADERVEHICLES" or StI == "SKIDSTEERVEHICLES" or StI == "WHEELLOADERVEHICLES" or StI == "WOODHARVESTING" 
-						or StI == "FORKLIFTS" or StI == "ANIMALSVEHICLES" or StI == "CARS" or StI == "TRUCKS" or StI == "VEGETABLEVEHICLES" or StI == "ANIMALS" 
-	-- print("CVTa ShopCat: " .. tostring(StI))
-    -- if intVehicles or int2ndVehicles then
-		local isVario = true -- ToDo: find a way to check if one of a motorconfig has cvt, when the first one is a manual shift
- 
-
-		delete(xmlFile.handle)
-		-- if isVario == true then -- hörhin
-			-- local cfg_off = g_i18n:getText("text_CVT_notInstalled_short")
-			-- local cfg_on = g_i18n:getText("text_CVT_Installed_short")
-			configurations["CVTaddon"] = {
-				{name = "text_CVT_notInstalled_short", index = 1, isDefault = true, price = 0,  dailyUpkeep = 0, isSelectable = true, desc ="aUs"},
-				-- {name = g_i18n:getText("text_CVT_notInstalled_short"), index = 1, isDefault = true, price = 0,  dailyUpkeep = 0, isSelectable = true, desc ="aUs"},
-				{name = "text_CVT_Installed_short",  index = 2, isDefault = false, price = 0,    dailyUpkeep = 1, isSelectable = true, desc ="tescht"}
-				-- {name = g_i18n:getText("text_CVT_Installed_short"),  index = 2, isDefault = false, price = 0,    dailyUpkeep = 1, isSelectable = true, desc ="tescht"}
-				
-				-- {name = g_i18n.modEnvironments[CultivatorSettings.MOD_NAME]:getText("text_DC_shallow"), index = 2, isDefault = false, isSelectable = true, price = 0, dailyUpkeep = 0, desc = g_i18n.modEnvironments[CultivatorSettings.MOD_NAME]:getText("text_DC_shallow")},
-				
-			}
-			-- dbgprint("addConfig : Configuration CVTaddonCfg added", 2)
-			
-			-- dbgprint_r(configurations["CVTaddonCfg"], 1)
-		-- end -- if isVario == true then
-	-- end  -- if intVehicles or int2ndVehicles then
-	
-    return configurations, defaultConfigurationIds
-end
 
 function CVTaddon:onPreLoad(savegame)
 	print("################################# onPreLoad")

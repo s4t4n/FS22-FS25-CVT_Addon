@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+	<texts>
+		<text name="txt_VarioOne" 					text=". "/>
+		<text name="txt_VarioTwo" 					text=" ."/>
+		<text name="txt_VarioN" 					text="N"/>
+		<text name="txt_VarioR" 					text="↓"/>
+		<text name="txt_VarioD" 					text="↑"/>
+
+		<text name="txt_VarioRpmPlus" 				text="tr/min +"/>
+		<text name="txt_VarioRpmMinus" 				text="tr/min -"/>
+
+		<text name="text_CVT_title" 				text="CVTaddon Une variante"/>
+		<text name="text_CVT_notInstalled_short" 	text="Non"/>
+		<text name="text_CVTclas_installed_short" 	text="CVT classique"/>
+		<text name="text_CVTclasB1_installed_short" text="CVT classique + IPM15"/>
+		<text name="text_CVTclasB2_installed_short" text="CVT classique + IPM27"/>
+		<text name="text_CVTmod_installed_short" 	text="CVT moderne"/>
+		<text name="text_CVTmodB1_installed_short" 	text="CVT moderne + IPM15"/>
+		<text name="text_CVTmodB2_installed_short" 	text="CVT moderne + IPM27"/>
+		<text name="text_HST_installed_short" 		text="HST Hydrostate"/>
+		<text name="text_CVT_manuInstalled_short" 	text="Est manuel"/>
+		<text name="text_CVT_ElektroInstalled_short" 	text="Électrique (par ex.ch. élévateur)"/>
+		<text name="text_CVT_HarvesterInstalled_short" 	text="Moissonneuse"/>
+        
+		<text name="input_SETVARIOONE" 				text="CVTa: Vitesse programmée: 1"/>
+		<text name="input_SETVARIOTWO" 				text="CVTa: Vitesse programmée: 2"/>
+		<text name="input_SETVARIOTOGGLE" 			text="CVTa: Toggle Drivinglevel"/>
+		<text name="input_SETVARION" 				text="CVTa: Neutre"/>
+		<text name="input_SETVARIOADIFFS" 			text="CVTa: AWD et DIFF Automatique"/>
+		<text name="input_SETVARIORPM_AXIS"			text="CVTa: Handthrottle axis"/>
+		<text name="input_SETVARIOCLUTCH_AXIS"		text="CVTa: Clutch (Doublebinding)"/>															  
+		<text name="input_SETVARIORPMP" 			text="CVTa: Augmenter régime moteur"/>
+		<text name="input_SETVARIORPMM" 			text="CVTa: Diminuer régime moteur"/>
+		<text name="input_SETVARIORPMDMAX" 			text="CVTa: Limiteur régime moteur"/>
+		<text name="input_SETPEDALTMS" 				text="CVTa: TMS Mode Pédale"/>
+		<text name="input_LMBF_TOGGLE_RAMP" 		text="CVTa: la rampe d'accélération +"/>
+		<text name="input_LMBF_TOGGLE_RAMPT" 		text="CVTa: Changer la rampe d'accélération"/>
+		<text name="input_LMBF_TOGGLE_RAMPS1" 		text="CVTa : définir la rampe d'accélération 1"/>
+		<text name="input_LMBF_TOGGLE_RAMPS2" 		text="CVTa : définir la rampe d'accélération 2"/>
+		<text name="input_LMBF_TOGGLE_RAMPS3" 		text="CVTa : définir la rampe d'accélération 3"/>
+		<text name="input_LMBF_TOGGLE_RAMPS4" 		text="CVTa : définir la rampe d'accélération 4"/>
+		<text name="input_LMBF_TOGGLE_RAMPD" 		text="CVTa: la rampe d'accélération -"/>
+		<text name="input_LMBF_TOGGLE_BRAMP" 		text="CVTa: Changer la rampe de freinage"/>
+		
+		<text name="txt_accRamp1" 					text="AR 1"/>
+		<text name="txt_accRamp2" 					text="AR 2"/>
+		<text name="txt_accRamp3" 					text="AR 3"/>
+		<text name="txt_accRamp4" 					text="AR 4"/>
+
+		<text name="txt_bRamp1" 					text="FR off"/>
+		<text name="txt_bRamp2" 					text="FR  4"/>
+		<text name="txt_bRamp3" 					text="FR  8"/>
+		<text name="txt_bRamp4" 					text="FR 15"/>
+		<text name="txt_bRamp5" 					text="FR 17"/>
+		
+		<text name="txt_vcaInfo" 					text="Merci de configurer le Frein moteur à 100% dans VCA et de désactiver Modification du régime moteur"/>
+		<text name="txt_needClutch2start" 			text="Appuyez sur l'embrayage pour démarrer le moteur."/>
+		<text name="txt_needBrake2start" 			text="Appuyez légèrement sur la pédale d'accélérateur pour démarrer le moteur et relâchez-le après le démarrage."/>
+		<text name="txt_needNoHG2start" 			text="Éteignez Handgas pour démarrer le moteur."/>																		 
+		<text name="txt_attCVTpressure" 			text="Attention, pression trop élevée dans la transmision. Vérifier la température"/>
+		<text name="txt_warn_tofastDn" 				text="Trop vite! Changez de vitesse à une vitesse maximale de 10 km/h, sinon la transmission sera endommagée"/>
+		<text name="txt_warn_tofastUp" 				text="Prudence! Changez de vitesse à une vitesse maximale de 10 km/h, arrêtez-vous de préférence un instant."/>
+		
+		
+		
+		<text name="help_page_title" 				text="CVT-Addon"/>
+			<text name="help_page_Functions" 			text="Les fonctions"/>
+				<text name="help_page_startEngine_title"	text="Démarrer le moteur"/>
+				<text name="help_page_startEngine_text"		text="Dans le cas de véhicules à variation continue,
+que l'embrayage normal. En configuration hydrostatique,
+lorsque le VCA est actif, le frein à main doit être tiré pour démarrer le moteur.
+De plus, la manette des gaz ne doit pas être tirée vers le haut, elle doit être sur 0."/>
+				
+				<text name="help_page_DL_title"				text="Niveau de conduite"/>
+				<text name="help_page_BLANK_text"					text=" "/>
+				<text name="help_page_DLimg_text"					text="
+
+
+
+Le point de gauche indique le niveau de conduite I.
+le point de droite indique le niveau de conduite II."/>
+				<text name="help_page_DL_text"					text="Il existe 2 niveaux de conduite, II. est destiné aux déplacements routiers,
+transports et travaux légers. Stage I. Plutôt pour les gros travaux de terrain et les transports lourds.
+La vitesse maximale est également réduite ici et le couple fournit plus de poussée,
+surtout au démarrage.
+Une attribution de clé doit être attribuée pour chaque niveau.
+Le changement d'autonomie doit être effectué à l'arrêt,
+car des dommages peuvent également survenir ici.
+*Un petit conseil si vous utilisez les boutons de commutation de groupe haut/bas,
+vous pouvez utiliser les mêmes boutons pour les niveaux de vitesse.
+Une particularité de la configuration « moderne » est que les autonomies sont réglementées."/>
+				
+				<text name="help_page_AR_title"				text="Rampes d'accélération"/>
+				<text name="help_page_AR_text"					text="De plus, il existe désormais une rampe d'accélération sur 4 niveaux,
+qui peut être commuté avec un bouton.
+Ici, le comportement de serrage lors de l'accélération et
+réduisant les influences de la vitesse de conduite.
+Doux et avec sensation ou pleine puissance et rugueux.
+Avec du matériel lourd ou des remorques,
+Des pressions élevées peuvent se produire dans le réducteur planétaire et des dommages peuvent survenir !
+Ici, la rampe d'accélération doit être réglée sur 3 ou moins.
+Le niveau 4 est plus adapté aux trajets à vide.
+Pour les travaux légers sur le terrain, vous pouvez facilement utiliser le niveau de vitesse 1
+Tirer la rampe d'accélération 4 - Par exemple, déchaumeur à disques, cultivateur plat."/>
+<text name="help_page_ARimg_text"					text="
+
+
+
+Niveaux AR 1 à 4"/>
+				
+				<text name="help_page_BR_title"				text="Rampes de freinage"/>
+				<text name="help_page_BR_text"					text="Afin de ne pas manquer des options de réglage pratiques,
+Vous pouvez également modifier la rampe de freinage.
+Il existe également un bouton qui peut être utilisé pour basculer entre 5 niveaux.
+La rampe de freinage à différents niveaux de vitesse
+à partir de 1 km/h (standard) 4, 8, 15 et 17 km/h cause,
+que lorsque vous relâchez la pédale d'accélérateur ou le joystick, le moteur freine
+supporté par le frein de service à partir de la rampe de freinage réglée.
+Cela peut être utile pour les travaux de manœuvre ou avec un chargeur frontal.
+- ou tout simplement lors de road trips stop and go."/>
+<text name="help_page_BRimg_text"					text="
+
+
+
+
+
+
+
+BR se stabilise et 1 à 4"/>
+
+				<text name="help_page_tmsP_title"			text="Mode pédale TMS"/>
+				<text name="help_page_tmsP_text"				text="Le mode TMS 'Pedal', avec lequel vous pouvez contrôler la résolution de la pédale.
+C'est à dire. régler la vitesse maximale de la pédale.
+Le régulateur de vitesse étant désactivé, vous pouvez y régler les niveaux.
+L'exemple 1 pourrait être un maximum de 3 km/h.
+Le Padal réagit alors en pourcentage,
+soit 50 % de course de pédale correspond à 6 km/h avec un maximum de 12 km/h."/>
+				
+				<text name="help_page_HG_title"				text="Accélérateur à main"/>
+				<text name="help_page_HG_text"					text="L'accélérateur manuel numérique n'a qu'une fonction décorative
+- mais avec un autre mod (rAdas), il le fera alors
+Entre autres choses, le système hydraulique arrière, les performances de la prise de force, etc. sont contrôlés.
+Il existe une fonctionnalité spéciale pour le HST et les chargeuses sur pneus."/>
+				
+				<text name="help_page_aDiff_title"			text="Diffs automatiques (VCA ou EV requis)"/>
+				<text name="help_page_aDiff_text"				text="Blocage automatique du différentiel en fonction de l'angle de braquage et des quatre roues motrices
+en fonction de la vitesse au niveau de vitesse I.
+Pour les travaux sur le terrain avec présélection automatique supplémentaire dans DL II. à DL I.
+Dans une configuration CVT moderne, la transmission intégrale est active en permanence et s'autorégule.
+Vous pouvez uniquement activer le blocage automatique du différentiel d'essieu."/>
+				
+				<text name="help_page_HST_title"			text="Entraînement Hydrostate HST"/>
+				<text name="help_page_HST_text"					text="Si un véhicule est configuré en HST, il existe deux types d'entraînement hydraulique
+qui peut être modifié via les anciennes zones de conduite 1 et 2.
+Ici, vous devez décider quel type de véhicule vous possédez
+- En réalité, un véhicule ne peut pas avoir les deux."/>
+				
+				<text name="help_page_HST1_text"				text="1 est la TVH classique,
+dans lequel la pédale est généralement conçue comme une bascule
+ou il y a deux pédales gauche et droite,
+chacun pour l'avant et l'arrière.
+Si vous appuyez sur la pédale dans un sens de déplacement,
+le véhicule se déplace en pourcentage de la pédale
+- Toutefois, le régime moteur reste inchangé (ralenti).
+Cela conduit à la vitesse maximale
+n’est pas atteint.
+Pour cela, il faut utiliser l'accélérateur manuel.
+À 100 % d'accélérateur manuel, la vitesse de conduite peut être ajustée
+sert toujours un pourcentage,
+car c'est un entraînement hydraulique.
+De plus, le chargeur frontal est utilisé sur les chargeuses sur pneus
+en fonction de la puissance de l'accélérateur manuel,
+c'est-à-dire plus le régime moteur est bas
+- qui est aussi la vitesse de la pompe
+- plus les vérins hydrauliques de levage se déplacent lentement.
+De plus, plus un outil à chargement frontal est lourd
+et plus il est chargé,
+la vitesse diminue lors du levage,
+plus l’accélérateur manuel est réglé bas.
+Attention, faites tourner le moteur lorsque le moteur est encore froid
+Le chargeur frontal peut faire caler le moteur."/>
+				
+				<text name="help_page_HST2_text"				text="2 est la variante la plus récente, qui comporte de très nombreuses autres variantes,
+Cela dépend du fabricant, mais je ne les détaillerai pas tous.
+En plus d'un frein, il n'y a généralement qu'une seule pédale d'accélérateur au lieu de deux.
+Il existe également un joystik ou quelque chose de similaire que vous pouvez utiliser pour avancer,
+Revenir au neutre si nécessaire. Si vous appuyez sur la pédale d'accélérateur,
+Le régime moteur se régule automatiquement et le véhicule accélère
+sur le pourcentage d'actionnement de la pédale.
+De plus, le régime moteur augmente automatiquement,
+dès que le chargeur frontal est utilisé - tant que la pédale d'accélérateur est enfoncée d'au moins 0,001 %.
+À la position de pédale 0%, l'accélérateur manuel doit toujours être utilisé pour assurer une vitesse minimale.
+En réalité, c'est un peu différent, mais malheureusement cela ne peut pas être implémenté de cette manière dans les mécanismes de jeu."/>
+				<text name="help_page_HST3_text"				text="Caractéristiques d'entraînement : Soit les moteurs hydrauliques sont directement sur/derrière les roues
+ou il existe une transmission HST, qui est généralement également livrée avec une
+L'arbre à cardan (si AWD disponible) prend en charge l'alimentation AWD.
+Cette dernière est plutôt une variante plus récente. Avec la transmission intégrale d'ancienne génération,
+Surtout sur les véhicules articulés, une transmission hydraulique est utilisée à l'avant et à l'arrière.
+Les rampes d'accélération en continu ont une fonction légèrement différente sur les HST !
+Le Hud indique alors « HySt » – qui peut toujours être commuté de 1 à 4.
+Pour les transmissions hydrostatiques, ce sont les plages de vitesse,
+     4 plus rapide
+     1 rapidement
+     2 lentement
+     3 le plus lent
+"/>
+
+				<text name="help_page_HARVESTER_text"				text="Cette configuration est commune à la plupart
+le bon choix pour les batteuses et broyeurs modernes.
+Tout est très similaire à la configuration HST,
+Cependant, il existe une autonomie sur route et un mode champ - les autonomies 1 et 2 représentent
+En mode terrain, il est également possible d'utiliser un périphérique d'entrée correspondant,
+par exemple en utilisant un joystick qui ne se centre pas comme un levier de conduite.
+De plus, les véhicules peuvent simplement être démarrés dans cette configuration.
+Mais soyez prudent si l'accélérateur manuel est toujours allumé et que le moteur n'est pas encore chaud.
+Comme pour le HST, les rampes d'accélération servent également de plages de vitesse.
+"/>
+			<text name="help_page_manual_title"		text="Transmission manuelle"/>
+			<text name="help_page_manual_text"		text="Si un véhicule est équipé d'une transmission manuelle,
+Vous pouvez le spécifier ici pour y utiliser la fonction de préchauffage du moteur.
+Pour les véhicules disposant de plusieurs variantes de transmission à choisir en magasin,
+Avec ceux-ci, il n'est pas possible de lire correctement le type d'engrenage.
+Si la fonction de réchauffement n'est pas souhaitée sur les véhicules manuels,
+sélectionnez l'option Non."/>
+
+<text name="help_page_electic_title"		text="Véhicules électriques"/>
+			<text name="help_page_electric_text"		text="Ces véhicules n'ont pas besoin de se réchauffer
+et ont une courbe d'accélération différente.
+Avec les autonomies, vous disposez d’une option de déplacement lent et rapide.
+Les rampes règlent la puissance de la batterie,
+combien le moteur de traction dispose en même temps.
+Plus celui-ci est élevé, plus le kWh est consommé.
+"/>
+				
+			<text name="help_page_beginning"		text="Préface"/>
+			<text name="help_page_keybinds_title"		text="Raccourcis clavier"/>
+			<text name="help_page_keybinds_text"		text="Aucun bouton n'est attribué par défaut ; chacun doit l'organiser lui-même."/>
+			<text name="help_page_keysInfo_text"		text="Pour l'embrayage, la même entrée peut être affectée,
+comme pour l’embrayage qui a été mis en place pour les transmissions manuelles.
+Les zones de conduite peuvent également avoir les mêmes occupations,
+comme ceux des interrupteurs de groupe."/>
+			
+			<text name="help_page_heatSystem"		text="Système de dommages et de surchauffe"/>
+				<text name="help_page_cold_title"					text="Moteur encore trop froid"/>
+				<text name="help_page_cold_text"				text=" 
+Le moteur est trop froid pour passer à plein régime en dessous de 45 °C, max. inférieur au régime maximum : 1,5
+Exemple: max 2200 tr / min: 1,5 = pas supérieur à environ 1460 tr / min.
+Attention, des régimes moteur trop élevés lorsque le moteur est froid augmentent drastiquement l'usure.
+Échauffez-vous en accélérant légèrement ou en conduisant lentement sans augmenter la vitesse.
+Cette fonctionnalité fonctionne sur tous les véhicules."/>
+
+				<text name="help_page_warnHeat_title"		text="La haute pression dans la transmission s'échauffe"/>
+				<text name="help_page_warnHeat_text"			text=" 
+Température d'avertissement, il y a une haute pression,
+à moins de 50 % de charge et à moins de 50 % des gaz ou lorsque vous arrêtez de conduire,
+il est désactivé lorsque le refroidissement est suffisant."/>
+				
+				<text name="help_page_warnDmg_title"		text="Attention : peut être endommagé"/>
+				<text name="help_page_warnDmg_text"			text=" 
+Un indicateur d'avertissement en haut vous informant
+que la rampe d'accélération actuelle pourrait causer des dommages"/>
+				
+				<text name="help_page_critHeat_title"		text="Chaleur critique"/>
+				<text name="help_page_critHeat_text"			text="
+Le rouge est l'avertissement de température critique.
+Il vaut mieux rester immobile et laisser refroidir."/>
+				
+				<text name="help_page_critDmg_title"		text="Dégâts critiques"/>
+				<text name="help_page_critDmg_text"				text="
+Indicateur de dégâts critiques.
+Aujourd'hui, il a subi des dommages mineurs ou majeurs.
+Pour réinitialiser la lampe : laissez le moteur refroidir et éteignez et rallumez le moteur.
+Si les dégâts sont trop importants et que la lampe est allumée,
+l'électronique de transmission passe en mode sécurité,
+de sorte que l'accélération et la vitesse de pointe sont réduites.
+Si l'extinction/l'allumage ne désactive pas la lampe, réparez d'abord les dommages,
+laissez-le refroidir et éteignez et rallumez le moteur."/>
+				
+				<text name="help_page_wearTear_title"		text="Usure normale"/>
+				<text name="help_page_wearTear_text"			text="Les dommages ne surviennent pas immédiatement ; l'usure augmente initialement.
+Si un certain niveau est dépassé en même temps que d'autres facteurs,
+Des dommages réels, voire une panne totale, se produisent.
+En réalité, réparer ou remplacer la boîte de vitesses coûte extrêmement cher, alors soyez prudent."/>
+
+				<text name="help_page_manuheat_title"		text="Réchauffement du moteur avec transmission manuelle"/>
+				<text name="help_page_manuheat_text"			text="Avec les transmissions manuelles,
+s'il n'a pas été désactivé dans la boutique,
+Le moteur doit également d'abord se réchauffer.
+Il y a 4 couleurs ici,
+Bleu - froid
+Vert - ok
+Jaune, orange - ok, chaud
+Rouge - trop chaud ou trop de tours lorsque le moteur est encore froid."/>
+
+		<text name="title_PosOfHUD" text="CVT Addon" />
+		<text name="setting_PosOf_HUD" text="HUD position" />
+		<text name="explanation_PosOf_HUD" text="Changez la position du HUD ou désactivez-le.
+Le réglage et la sauvegarde se feront par joueur." />
+		<!-- Auswahlmöglichkeiten -->
+		<text name="selection_CVTaddonHUDpos_1" text="Défaut" />
+		<text name="selection_CVTaddonHUDpos_2" text="Haut" />
+		<text name="selection_CVTaddonHUDpos_3" text="Désactivé" />
+
+		<text name="SettingChanged_title" text="CVT-Addon" />
+
+		<text name="SettingChanged" text="HUD modifié" />
+		<text name="SettingNorm" text="par défaut" />
+		<text name="SettingTop" text="en haut" />
+		<text name="SettingOff" text=".. désactivé!" />
+		<text name="damageWT" text="Veuillez réparer, l'usure du groupe d'entraînement est excessive " />
+		
+		<text name="help_page_HUDset_title"	text="Hud Position"/>
+		<text name="help_page_HUDset_text"	text="Dans le menu Echap, paramètres avec l'icône du tracteur,
+la position du HUD peut être modifiée de deux manières
+ou désactiver. Ce paramètre s'applique par joueur." />
+	</texts>   
+
+</l10n>
